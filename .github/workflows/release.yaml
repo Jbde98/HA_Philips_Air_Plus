@@ -1,0 +1,44 @@
+name: Release
+
+# Creates a GitHub release (tag vX.Y.Z) whenever main carries a manifest version
+# that has no release yet. Release notes = that version's CHANGELOG.md section.
+# HACS shows these releases as versions ("v0.4.0" instead of a commit hash) and
+# links "release notes" to them.
+#
+# To release: bump "version" in manifest.json, add a matching
+# "## [X.Y.Z] - date" section to CHANGELOG.md, merge to main.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Read version from manifest
+        id: version
+        run: echo "version=$(jq -r .version custom_components/philips_airplus/manifest.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Create release if missing
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          tag="v${VERSION}"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "Release $tag already exists, nothing to do."
+            exit 0
+          fi
+          .github/scripts/changelog_section.sh "$VERSION" > notes.md
+          if [ ! -s notes.md ]; then
+            echo "::error::CHANGELOG.md has no section '## [${VERSION}]'. Add one before releasing."
+            exit 1
+          fi
+          gh release create "$tag" --target "$GITHUB_SHA" --title "$tag" --notes-file notes.md
