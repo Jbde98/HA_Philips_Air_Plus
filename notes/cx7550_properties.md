@@ -32,7 +32,7 @@ Philips-Air+-App geschaltet, ~30 s Pause pro Schritt.
 
 | D-Code | Beobachtung |
 |---|---|
-| `D03240` | 0, in beiden Sweeps unverändert (evtl. Aroma, in der App nicht schaltbar) |
+| `D03240` | 0, in beiden Sweeps unverändert. **Nicht** Aroma: Das Aroma ist passiv (Öl wird von Hand auf ein Pad getropft und verteilt sich im Luftstrom), es gibt dafür keinen Schalter. |
 
 ## Offen (Stand Sweep 1, Display-Punkte inzwischen geklärt)
 
@@ -40,6 +40,6 @@ Philips-Air+-App geschaltet, ~30 s Pause pro Schritt.
   (`StatusType` → `control`), aber kein sichtbarer D-Code änderte sich. Der Logger
   filterte damals `D03105` als Rauschen; der Wert stand bei `115`. Verdacht:
   `D03105` = Display-Helligkeit. Seit v0.4.0 wird `D03105` geloggt.
-- Temperaturfarbe anzeigen, Temperatur im Standby anzeigen, Bevorzugter
-  Anzeigeindikator, Aroma (falls vorhanden): noch nicht getestet.
+- (geklärt in Sweep 2) Temperaturfarbe anzeigen, Temperatur im Standby anzeigen, Bevorzugter
+  Anzeigeindikator. Aroma: kein Schalter, rein passiv (Öl-Pad).
 - Timer 12 h (erwartet `D03110` = 13).
