@@ -5,6 +5,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+- Releases are created automatically from `manifest.json` + `CHANGELOG.md` when
+  main is updated, so HACS shows real version numbers and release notes.
+
 ## [0.4.0] - 2026-11-26
 
 ### Added
