@@ -105,6 +105,10 @@ Traffic-Mitschnitten rausgesucht werden müsste.
 | Lüfterstufe | `select` | Stufe direkt wählen (1–3 / 1–12) |
 | Piepton | `switch` | Tastenton An/Aus (Konfiguration) |
 | Timer | `switch` | Auto-Aus-Timer An/Aus (Konfiguration) |
+| Display | `select` | Aus / Niedrig / Hell (CX7550) |
+| Anzeigeindikator | `select` | Lüfterstufe im manuellen Modus / Temperatur immer (CX7550) |
+| Temperaturfarbe anzeigen | `switch` | An/Aus (CX7550) |
+| Temperatur im Standby anzeigen | `switch` | An/Aus (CX7550) |
 | Timer-Dauer | `number` | Auto-Aus-Timer-Länge, 0–12 h (Konfiguration) |
 | Timer-Restzeit | `sensor` | Countdown in Minuten (nur lesbar) |
 | Signalstärke | `sensor` | WiFi-RSSI in dBm (Diagnose, standardmäßig aus) |
@@ -116,8 +120,7 @@ Alle Steuer-Writes wurden (im Original) an einem physischen CX3550/01 verifizier
 An/Aus, Stufe 1/2/3, Schlafen-/Natürlich-Presets, Oszillation, Piepton, Timer
 An/Aus und -Dauer. Die CX7550/01-Belegung stammt aus einem D-Code-Durchlauf an
 einem echten Gerät, siehe [`notes/cx7550_properties.md`](notes/cx7550_properties.md).
-Display-Einstellungen (Helligkeit, Temperaturfarbe, Standby-Anzeige) sind noch
-nicht abgebildet.
+Die Display-Einstellungen wurden in einem zweiten Durchlauf erfasst.
 
 ## Weiteres Modell hinzufügen
 

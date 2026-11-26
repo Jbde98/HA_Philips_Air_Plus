@@ -18,22 +18,28 @@ Philips-Air+-App geschaltet, ~30 s Pause pro Schritt.
 | `D03224` | Temperatur um das Gerät | Zehntel °C (200 = 20,0 °C) |
 | `StatusType` | `control` während eines App-Befehls, sonst `status` | — |
 
-## Beobachtet, Bedeutung offen
+## Verifiziert in Sweep 2 (Display-Einstellungen)
+
+| D-Code | Bedeutung | Werte |
+|---|---|---|
+| `D03105` | Display-Helligkeit | 0 = aus, 115 = niedrig, 123 = hell |
+| `D03104` | Temperaturfarbe anzeigen | 100 = an, 0 = aus |
+| `D03133` | Temperatur im Standby anzeigen | 1 = an, 0 = aus |
+| `D0312A` | Bevorzugter Anzeigeindikator (Einstellung) | 7 = Lüfterstufe im manuellen Modus (App-Übersicht: „Automatisch“), 5 = Temperatur immer |
+| `D0312B` | aktuell angezeigter Indikator (read-only) | folgt `D0312A`, fällt aber in Auto/Schlaf/Brise auf 5 |
+
+## Beobachtet, Bedeutung offen (Stand nach Sweep 1)
 
 | D-Code | Beobachtung |
 |---|---|
-| `D0312B` | 7 im manuellen Modus, 5 nach Wechsel auf Auto (bleibt 5 in Schlaf/Brise), 7 nach Rückkehr zu manuell |
-| `D0312A` | 7, in Sweep 1 unverändert |
-| `D03104` | 100, unverändert |
-| `D03133` | 1, unverändert |
-| `D03240` | 0, unverändert |
+| `D03240` | 0, in beiden Sweeps unverändert. **Nicht** Aroma: Das Aroma ist passiv (Öl wird von Hand auf ein Pad getropft und verteilt sich im Luftstrom), es gibt dafür keinen Schalter. |
 
-## Offen für Sweep 2
+## Offen (Stand Sweep 1, Display-Punkte inzwischen geklärt)
 
 - Display niedrig / hell / aus: in Sweep 1 wurden Befehle gesendet
   (`StatusType` → `control`), aber kein sichtbarer D-Code änderte sich. Der Logger
   filterte damals `D03105` als Rauschen; der Wert stand bei `115`. Verdacht:
   `D03105` = Display-Helligkeit. Seit v0.4.0 wird `D03105` geloggt.
-- Temperaturfarbe anzeigen, Temperatur im Standby anzeigen, Bevorzugter
-  Anzeigeindikator, Aroma (falls vorhanden): noch nicht getestet.
+- (geklärt in Sweep 2) Temperaturfarbe anzeigen, Temperatur im Standby anzeigen, Bevorzugter
+  Anzeigeindikator. Aroma: kein Schalter, rein passiv (Öl-Pad).
 - Timer 12 h (erwartet `D03110` = 13).
