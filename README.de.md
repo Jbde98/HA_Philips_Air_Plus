@@ -1,13 +1,31 @@
-# Philips Air+ (CX3550/01) für Home Assistant
+# Philips-Air+-Ventilatoren (CX3550 / CX7550) für Home Assistant
 
 [🇬🇧 English](README.md) | 🇩🇪 Deutsch
 
-<img src="https://raw.githubusercontent.com/Ka3seBr0t/HA_Philips_Air_Plus/main/brand/logo.png" alt="Philips Air+ Integrations-Icon" width="96" height="96">
+<img src="https://raw.githubusercontent.com/Jbde98/HA_Philips_Air_Plus/main/brand/logo.png" alt="Philips Air+ Integrations-Icon" width="96" height="96">
 
-[![Öffne deine Home-Assistant-Instanz und öffne ein Repository in der Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Ka3seBr0t&repository=HA_Philips_Air_Plus&category=integration)
+[![Öffne deine Home-Assistant-Instanz und öffne ein Repository in der Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Jbde98&repository=HA_Philips_Air_Plus&category=integration)
+
+> ### Über diesen Fork
+> Dies ist ein Fork von **[Ka3seBr0t/HA_Philips_Air_Plus](https://github.com/Ka3seBr0t/HA_Philips_Air_Plus)**.
+> Die eigentliche Arbeit stammt von dort: das Reverse Engineering des
+> Philips-Cloud-Protokolls, die Anmeldung über die APK, die MQTT-Verbindung und
+> die CX3550-Unterstützung. Bitte gebt dem Original einen Stern und unterstützt es.
+>
+> Den Fork gibt es, weil ich einen **CX7550** (Smart Tower Fan 7000 Series)
+> habe, den das Original noch nicht unterstützt. Er ergänzt:
+> - **CX7550/01-Unterstützung** über Modellprofile: 12 Stufen, Auto / Schlaf /
+>   Natürliche Brise, Oszillation, Timer und einen **Temperatursensor**
+> - einen **D-Code-Debug-Logger**, mit dem sich weitere Modelle leicht erfassen lassen
+> - Fehlerbehebungen für die Abfrage alle 30 s, einen blockierenden TLS-Aufruf
+>   und persönliche Daten in der Diagnose (siehe [CHANGELOG](CHANGELOG.md))
+>
+> Ziel ist, die Änderungen ins Original zurückzugeben, damit eine Integration
+> alle Air+-Ventilatoren abdeckt. Wird das dort übernommen, nutzt bitte das Original.
 
 Eine Home-Assistant-Custom-Integration für **Philips-Air+-Cloud-only-Ventilatoren**,
-verifiziert am **CX3550/01** (Standventilator "Series 3000", Air-Matters-App).
+verifiziert am **CX3550/01** (Standventilator "Series 3000") und am
+**CX7550/01** ("Smart Tower Fan 7000 Series").
 Diese Ventilatoren haben keine lokale API — sie werden über ein AWS-IoT-Device-Shadow
 per MQTT-over-WSS gesteuert, hinter Philips' clientseitig signierter *air-matters/gaoda*-
 Auth-Kette.
@@ -83,7 +101,7 @@ Traffic-Mitschnitten rausgesucht werden müsste.
 
 | Entität | Plattform | Steuert / zeigt |
 |---|---|---|
-| Ventilator | `fan` | An/Aus, Stufe 1/2/3 (Prozent), Presets **Schlafen** / **Natürlich**, Oszillation |
+| Ventilator | `fan` | An/Aus, Stufe (Prozent; CX3550: 3 Stufen, CX7550: 12 Stufen), Presets **Schlafen** / **Natürlich** (CX7550 zusätzlich **Automatisch**), Oszillation |
 | Piepton | `switch` | Tastenton An/Aus (Konfiguration) |
 | Timer | `switch` | Auto-Aus-Timer An/Aus (Konfiguration) |
 | Timer-Dauer | `number` | Auto-Aus-Timer-Länge, 0–12 h (Konfiguration) |
@@ -91,10 +109,24 @@ Traffic-Mitschnitten rausgesucht werden müsste.
 | Signalstärke | `sensor` | WiFi-RSSI in dBm (Diagnose, standardmäßig aus) |
 | Laufzeit | `sensor` | Geräte-Laufzeit in Sekunden (Diagnose, standardmäßig aus) |
 | Freier Speicher | `sensor` | Freier Heap in Bytes (Diagnose, standardmäßig aus) |
+| Temperatur | `sensor` | Temperatur um das Gerät in °C (nur CX7550) |
 
-Alle Steuer-Writes sind an einem physischen CX3550/01 verifiziert: An/Aus,
-Stufe 1/2/3, Schlafen-/Natürlich-Presets, Oszillation, Piepton, Timer An/Aus
-und -Dauer.
+Alle Steuer-Writes wurden (im Original) an einem physischen CX3550/01 verifiziert:
+An/Aus, Stufe 1/2/3, Schlafen-/Natürlich-Presets, Oszillation, Piepton, Timer
+An/Aus und -Dauer. Die CX7550/01-Belegung stammt aus einem D-Code-Durchlauf an
+einem echten Gerät, siehe [`notes/cx7550_properties.md`](notes/cx7550_properties.md).
+Display-Einstellungen (Helligkeit, Temperaturfarbe, Standby-Anzeige) sind noch
+nicht abgebildet.
+
+## Weiteres Modell hinzufügen
+
+1. Debug-Protokollierung der Integration aktivieren (**Einstellungen → Geräte &
+   Dienste → Philips Air+ → ⋮ → Debug-Protokollierung aktivieren**).
+2. In der Philips-App eine Funktion nach der anderen umschalten, jeweils ca. 30 s Pause.
+3. Debug-Protokollierung deaktivieren; HA lädt das Log herunter. Die Zeilen sehen so
+   aus: `D-code change [CX7550/01]: D0310D: 6 -> 7`. Identifizierende Werte sind maskiert.
+4. Ein `ModelProfile` in [`models.py`](custom_components/philips_airplus/models.py)
+   ergänzen und ein Issue oder einen PR mit dem Log aufmachen.
 
 ## Fehlerbehebung
 
@@ -118,6 +150,7 @@ und -Dauer.
 ```
 custom_components/philips_airplus/   die Integration (das, was HACS installiert)
 notes/                                bereinigte RE-Prozess-Notizen (keine Secrets/persönlichen Daten)
+tests/                                Unit-Tests für Modellprofile und den D-Code-Logger
 ```
 
 Dekompilierte APK-Inhalte, RE-Tooling und rohe Netzwerk-Mitschnitte aus der
@@ -125,4 +158,5 @@ Entwicklung sind gitignored und nie Teil der Repository-History.
 
 ## Lizenz
 
-MIT — siehe [LICENSE](LICENSE).
+MIT — siehe [LICENSE](LICENSE). Originalarbeit © 2026 Ka3seBr0t; die Änderungen
+dieses Forks stehen unter derselben Lizenz.

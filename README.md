@@ -1,13 +1,31 @@
-# Philips Air+ (CX3550/01) for Home Assistant
+# Philips Air+ fans (CX3550 / CX7550) for Home Assistant
 
 🇬🇧 English | [🇩🇪 Deutsch](README.de.md)
 
-<img src="https://raw.githubusercontent.com/Ka3seBr0t/HA_Philips_Air_Plus/main/brand/logo.png" alt="Philips Air+ integration icon" width="96" height="96">
+<img src="https://raw.githubusercontent.com/Jbde98/HA_Philips_Air_Plus/main/brand/logo.png" alt="Philips Air+ integration icon" width="96" height="96">
 
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Ka3seBr0t&repository=HA_Philips_Air_Plus&category=integration)
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Jbde98&repository=HA_Philips_Air_Plus&category=integration)
+
+> ### About this fork
+> This is a fork of **[Ka3seBr0t/HA_Philips_Air_Plus](https://github.com/Ka3seBr0t/HA_Philips_Air_Plus)**.
+> All the hard work is theirs: reverse engineering the Philips cloud protocol,
+> the APK-based sign-in, the MQTT connection and the CX3550 support. Please star
+> and support the original.
+>
+> This fork exists because I own a **CX7550** (Smart Tower Fan 7000 Series),
+> which the original does not yet support. It adds:
+> - **CX7550/01 support** via per-model profiles: 12 speeds, auto / sleep /
+>   natural breeze, oscillation, timer, and a **temperature sensor**
+> - a **D-code debug logger** that makes mapping further models easy
+> - fixes for the reconcile poll, a blocking TLS call and personal data in
+>   diagnostics (see [CHANGELOG](CHANGELOG.md))
+>
+> The goal is to contribute these changes back upstream, so that one
+> integration supports all Air+ fans. If upstream merges them, use the original.
 
 A Home Assistant custom integration for **Philips Air+ cloud-only fans**,
-verified against the **CX3550/01** ("Series 3000" stand fan, Air Matters app).
+verified against the **CX3550/01** ("Series 3000" stand fan) and the
+**CX7550/01** ("Smart Tower Fan 7000 Series").
 These fans have no local API — they're controlled via an AWS IoT device
 shadow over MQTT-over-WSS, behind Philips' client-signed *air-matters/gaoda*
 auth chain.
@@ -77,7 +95,7 @@ captures.
 
 | Entity | Platform | Controls / shows |
 |---|---|---|
-| Fan | `fan` | on/off, speed 1/2/3 (percentage), presets **sleep** / **natural**, oscillate |
+| Fan | `fan` | on/off, speed (percentage; CX3550: 3 steps, CX7550: 12 steps), presets **sleep** / **natural** (CX7550 also **auto**), oscillate |
 | Key beep | `switch` | key-tone on/off (config) |
 | Timer | `switch` | auto-off timer on/off (config) |
 | Timer duration | `number` | auto-off timer length, 0–12 h (config) |
@@ -85,9 +103,23 @@ captures.
 | Signal strength | `sensor` | WiFi RSSI dBm (diagnostic, off by default) |
 | Uptime | `sensor` | device runtime seconds (diagnostic, off by default) |
 | Free memory | `sensor` | free heap bytes (diagnostic, off by default) |
+| Temperature | `sensor` | temperature around the device, °C (CX7550 only) |
 
-All control writes are verified against a physical CX3550/01: power, speed
-1/2/3, sleep/natural presets, oscillate, beep, timer on/off and duration.
+All control writes were verified against a physical CX3550/01 (upstream): power,
+speed 1/2/3, sleep/natural presets, oscillate, beep, timer on/off and duration.
+The CX7550/01 mapping comes from a D-code sweep on a physical unit; see
+[`notes/cx7550_properties.md`](notes/cx7550_properties.md). Display settings
+(brightness, temperature colour, standby display) are not mapped yet.
+
+## Adding another model
+
+1. Enable debug logging on the integration (**Settings → Devices & Services →
+   Philips Air+ → ⋮ → Enable debug logging**).
+2. In the Philips app, change one function at a time, waiting ~30 s between steps.
+3. Disable debug logging; HA downloads the log. Lines look like
+   `D-code change [CX7550/01]: D0310D: 6 -> 7`. Identifying values are masked.
+4. Add a `ModelProfile` in [`models.py`](custom_components/philips_airplus/models.py)
+   and open an issue or PR with the log.
 
 ## Troubleshooting
 
@@ -109,6 +141,7 @@ All control writes are verified against a physical CX3550/01: power, speed
 ```
 custom_components/philips_airplus/   the integration (what HACS installs)
 notes/                                sanitized RE process notes (no secrets/personal data)
+tests/                                unit tests for model profiles and the D-code logger
 ```
 
 Decompiled APK contents, RE tooling, and raw network captures used during
@@ -116,4 +149,5 @@ development are gitignored and never part of this repository's history.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT — see [LICENSE](LICENSE). Original work © 2026 Ka3seBr0t; fork changes
+are released under the same license.
