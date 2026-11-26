@@ -102,6 +102,7 @@ Traffic-Mitschnitten rausgesucht werden müsste.
 | Entität | Plattform | Steuert / zeigt |
 |---|---|---|
 | Ventilator | `fan` | An/Aus, Stufe (Prozent; CX3550: 3 Stufen, CX7550: 12 Stufen), Presets **Schlafen** / **Natürlich** (CX7550 zusätzlich **Automatisch**), Oszillation |
+| Lüfterstufe | `select` | Stufe direkt wählen (1–3 / 1–12) |
 | Piepton | `switch` | Tastenton An/Aus (Konfiguration) |
 | Timer | `switch` | Auto-Aus-Timer An/Aus (Konfiguration) |
 | Timer-Dauer | `number` | Auto-Aus-Timer-Länge, 0–12 h (Konfiguration) |

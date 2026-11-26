@@ -90,6 +90,11 @@
       "timer_hours": {
         "name": "Timer duration"
       }
+    },
+    "select": {
+      "fan_level": {
+        "name": "Fan level"
+      }
     }
   }
 }
