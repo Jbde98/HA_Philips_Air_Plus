@@ -90,6 +90,11 @@
       "timer_hours": {
         "name": "Timer-Dauer"
       }
+    },
+    "select": {
+      "fan_level": {
+        "name": "Lüfterstufe"
+      }
     }
   }
 }

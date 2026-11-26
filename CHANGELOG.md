@@ -5,6 +5,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-26
+
+### Added
+- **Fan level** select entity: every speed as its own option (CX3550: 1-3,
+  CX7550: 1-12), so a level can be picked directly in dashboards and
+  automations instead of via the percentage slider. Shows the level the device
+  reports, also while auto / sleep / natural breeze is running; selecting a
+  level switches to manual mode at that level.
+
 ### Changed
 - Releases are created automatically from `manifest.json` + `CHANGELOG.md` when
   main is updated, so HACS shows real version numbers and release notes.

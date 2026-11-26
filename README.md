@@ -96,6 +96,7 @@ captures.
 | Entity | Platform | Controls / shows |
 |---|---|---|
 | Fan | `fan` | on/off, speed (percentage; CX3550: 3 steps, CX7550: 12 steps), presets **sleep** / **natural** (CX7550 also **auto**), oscillate |
+| Fan level | `select` | pick a speed directly (1–3 / 1–12) |
 | Key beep | `switch` | key-tone on/off (config) |
 | Timer | `switch` | auto-off timer on/off (config) |
 | Timer duration | `number` | auto-off timer length, 0–12 h (config) |
