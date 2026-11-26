@@ -1,4 +1,4 @@
-# Philips Air+ (CX3550/01) für Home Assistant
+# Philips-Air+-Ventilatoren (CX3550 / CX7550) für Home Assistant
 
 [🇬🇧 English](README.md) | 🇩🇪 Deutsch
 
@@ -7,7 +7,8 @@
 [![Öffne deine Home-Assistant-Instanz und öffne ein Repository in der Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Ka3seBr0t&repository=HA_Philips_Air_Plus&category=integration)
 
 Eine Home-Assistant-Custom-Integration für **Philips-Air+-Cloud-only-Ventilatoren**,
-verifiziert am **CX3550/01** (Standventilator "Series 3000", Air-Matters-App).
+verifiziert am **CX3550/01** (Standventilator "Series 3000", Air-Matters-App)
+und am **CX7550/01** ("Smart Tower Fan 7000 Series").
 Diese Ventilatoren haben keine lokale API — sie werden über ein AWS-IoT-Device-Shadow
 per MQTT-over-WSS gesteuert, hinter Philips' clientseitig signierter *air-matters/gaoda*-
 Auth-Kette.
@@ -83,18 +84,37 @@ Traffic-Mitschnitten rausgesucht werden müsste.
 
 | Entität | Plattform | Steuert / zeigt |
 |---|---|---|
-| Ventilator | `fan` | An/Aus, Stufe 1/2/3 (Prozent), Presets **Schlafen** / **Natürlich**, Oszillation |
+| Ventilator | `fan` | An/Aus, Stufe (Prozent; CX3550: 3 Stufen, CX7550: 12 Stufen), Presets **Schlafen** / **Natürlich** (CX7550 zusätzlich **Automatisch**), Oszillation |
+| Lüfterstufe | `select` | Stufe direkt wählen (1–3 / 1–12) |
 | Piepton | `switch` | Tastenton An/Aus (Konfiguration) |
 | Timer | `switch` | Auto-Aus-Timer An/Aus (Konfiguration) |
+| Display | `select` | Aus / Niedrig / Hell (CX7550) |
+| Anzeigeindikator | `select` | Lüfterstufe im manuellen Modus / Temperatur immer (CX7550) |
+| Temperaturfarbe anzeigen | `switch` | An/Aus (CX7550) |
+| Temperatur im Standby anzeigen | `switch` | An/Aus (CX7550) |
 | Timer-Dauer | `number` | Auto-Aus-Timer-Länge, 0–12 h (Konfiguration) |
 | Timer-Restzeit | `sensor` | Countdown in Minuten (nur lesbar) |
 | Signalstärke | `sensor` | WiFi-RSSI in dBm (Diagnose, standardmäßig aus) |
 | Laufzeit | `sensor` | Geräte-Laufzeit in Sekunden (Diagnose, standardmäßig aus) |
 | Freier Speicher | `sensor` | Freier Heap in Bytes (Diagnose, standardmäßig aus) |
+| Temperatur | `sensor` | Temperatur um das Gerät in °C (nur CX7550) |
 
 Alle Steuer-Writes sind an einem physischen CX3550/01 verifiziert: An/Aus,
 Stufe 1/2/3, Schlafen-/Natürlich-Presets, Oszillation, Piepton, Timer An/Aus
-und -Dauer.
+und -Dauer. Die CX7550/01-Belegung stammt aus zwei D-Code-Durchläufen an einem
+echten Gerät und wurde anschließend durch Steuern jeder Entität aus HA geprüft,
+siehe [`notes/cx7550_properties.md`](notes/cx7550_properties.md).
+
+## Weiteres Modell hinzufügen
+
+1. Debug-Protokollierung der Integration aktivieren (**Einstellungen → Geräte &
+   Dienste → Philips Air+ → ⋮ → Debug-Protokollierung aktivieren**).
+2. In der Philips-App eine Funktion nach der anderen umschalten, jeweils ca. 30 s Pause.
+3. Debug-Protokollierung deaktivieren; HA lädt das Log herunter. Die Zeilen sehen so
+   aus: `D-code change [CX7550/01]: D0310D: 6 -> 7`. Identifizierende Werte sind maskiert.
+4. Ein `ModelProfile` in [`models.py`](custom_components/philips_airplus/models.py)
+   ergänzen (Stufen, Presets, Oszillationswinkel, zusätzliche Schalter/Auswahlen)
+   und ein Issue oder einen PR mit dem Log aufmachen.
 
 ## Fehlerbehebung
 
@@ -118,6 +138,7 @@ und -Dauer.
 ```
 custom_components/philips_airplus/   die Integration (das, was HACS installiert)
 notes/                                bereinigte RE-Prozess-Notizen (keine Secrets/persönlichen Daten)
+tests/                                Unit-Tests für Modellprofile und den D-Code-Logger
 ```
 
 Dekompilierte APK-Inhalte, RE-Tooling und rohe Netzwerk-Mitschnitte aus der

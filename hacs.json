@@ -1,5 +1,5 @@
 {
-  "name": "Philips Air+ (CX3550)",
+  "name": "Philips Air+ (CX3550 / CX7550)",
   "content_in_root": false,
   "render_readme": true,
   "homeassistant": "2024.10.0"

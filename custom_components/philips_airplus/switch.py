@@ -1,4 +1,7 @@
-"""Switch platform for Philips Air+ (CX3550/01).
+"""Switch platform for Philips Air+ (CX3550/01, CX7550/01).
+
+Model-specific on/off settings (e.g. CX7550 display options) come from
+``models.ModelProfile.toggles`` and use ``PhilipsAirplusToggleSwitch``.
 
 Two CONFIG-category switches per fan:
   * beep           D03130  100=on / 0=off  (key-tone on button press)
@@ -29,6 +32,7 @@ from .const import (
     TIMER_ON,
 )
 from .coordinator import PhilipsAirplusCoordinator
+from .models import ToggleSetting, get_profile
 
 
 async def async_setup_entry(
@@ -36,7 +40,13 @@ async def async_setup_entry(
 ) -> None:
     store = hass.data[DOMAIN][entry.entry_id]
     for coordinator in store["coordinators"].values():
-        async_add_entities([PhilipsAirplusBeepSwitch(coordinator), PhilipsAirplusTimerSwitch(coordinator)])
+        entities: list[SwitchEntity] = [
+            PhilipsAirplusBeepSwitch(coordinator),
+            PhilipsAirplusTimerSwitch(coordinator),
+        ]
+        profile = get_profile((coordinator.device_info or {}).get("modelid"))
+        entities.extend(PhilipsAirplusToggleSwitch(coordinator, t) for t in profile.toggles)
+        async_add_entities(entities)
 
 
 class _AirplusSwitch(CoordinatorEntity, SwitchEntity):
@@ -115,3 +125,22 @@ class PhilipsAirplusTimerSwitch(_AirplusSwitch):
 
     async def async_turn_off(self, **kwargs) -> None:
         await self.coordinator.async_set_desired({D_TIMER_ACT: TIMER_OFF})
+
+class PhilipsAirplusToggleSwitch(_AirplusSwitch):
+    """A model-specific on/off setting described by a ``ToggleSetting``."""
+
+    def __init__(self, coordinator: PhilipsAirplusCoordinator, setting: ToggleSetting) -> None:
+        super().__init__(coordinator)
+        self._setting = setting
+        self._attr_translation_key = setting.key
+        self._attr_unique_id = f"{coordinator.device_id}_{setting.key}"
+
+    @property
+    def is_on(self) -> bool | None:
+        return self._setting.is_on(self._rep().get(self._setting.code))
+
+    async def async_turn_on(self, **kwargs) -> None:
+        await self.coordinator.async_set_desired({self._setting.code: self._setting.on})
+
+    async def async_turn_off(self, **kwargs) -> None:
+        await self.coordinator.async_set_desired({self._setting.code: self._setting.off})

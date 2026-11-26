@@ -5,6 +5,23 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+- **CX7550/01 (Smart Tower Fan 7000 Series)** support via per-model profiles
+  (`models.py`). Mapping from two D-code sweeps on a physical unit (fw 0.2.9),
+  then verified by controlling every entity from HA:
+  - 12 speeds (wire codes 1-10, 81, 82), presets auto / sleep / natural breeze,
+    oscillation (80 deg), timer 1-12 h
+  - **Temperature** sensor (D03224, 0.1 degC)
+  - **Display** select (D03105: off 0 / low 115 / bright 123), **Display
+    indicator** select (D0312A: fan speed in manual mode 7 / always
+    temperature 5), **Show temperature colour** (D03104) and **Show
+    temperature in standby** (D03133) switches
+- **Fan level** select: every speed as its own option (1-3 / 1-12), for
+  dashboards and automations instead of the percentage slider.
+- Profiles declare extra settings declaratively (`ToggleSetting`,
+  `ChoiceSetting`), so new models need no new entity code. Unknown models fall
+  back to the CX3550 profile, i.e. the previous behaviour.
+
 ### Fixed
 - The 30 s reconcile poll never ran: the coordinator implemented
   `async_update_data` instead of `_async_update_data`, so HA logged

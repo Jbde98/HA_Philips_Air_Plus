@@ -48,20 +48,52 @@
             }
           }
         }
+      },
+      "cx7550": {
+        "state_attributes": {
+          "preset_mode": {
+            "state": {
+              "sleep": "Schlafen",
+              "natural": "Natürliche Brise",
+              "auto": "Automatisch"
+            }
+          }
+        }
       }
     },
     "switch": {
       "beep": { "name": "Piepton" },
-      "timer": { "name": "Timer" }
+      "timer": { "name": "Timer" },
+      "temperature_color": { "name": "Temperaturfarbe anzeigen" },
+      "standby_temperature": { "name": "Temperatur im Standby anzeigen" }
     },
     "sensor": {
       "timer_remaining": { "name": "Timer-Restzeit" },
       "rssi": { "name": "Signalstärke" },
       "runtime": { "name": "Laufzeit" },
-      "free_memory": { "name": "Freier Speicher" }
+      "free_memory": { "name": "Freier Speicher" },
+      "temperature": { "name": "Temperatur" }
     },
     "number": {
       "timer_hours": { "name": "Timer-Dauer" }
+    },
+    "select": {
+      "fan_level": { "name": "Lüfterstufe" },
+      "display": {
+        "name": "Display",
+        "state": {
+          "off": "Aus",
+          "low": "Niedrig",
+          "high": "Hell"
+        }
+      },
+      "display_indicator": {
+        "name": "Anzeigeindikator",
+        "state": {
+          "fan_speed": "Lüfterstufe im manuellen Modus",
+          "temperature": "Temperatur immer anzeigen"
+        }
+      }
     }
   }
 }
