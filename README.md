@@ -99,6 +99,10 @@ captures.
 | Fan level | `select` | pick a speed directly (1–3 / 1–12) |
 | Key beep | `switch` | key-tone on/off (config) |
 | Timer | `switch` | auto-off timer on/off (config) |
+| Display | `select` | off / low / bright (CX7550) |
+| Display indicator | `select` | fan speed in manual mode / always temperature (CX7550) |
+| Show temperature colour | `switch` | on/off (CX7550) |
+| Show temperature in standby | `switch` | on/off (CX7550) |
 | Timer duration | `number` | auto-off timer length, 0–12 h (config) |
 | Timer remaining | `sensor` | countdown minutes (read-only) |
 | Signal strength | `sensor` | WiFi RSSI dBm (diagnostic, off by default) |
@@ -109,8 +113,7 @@ captures.
 All control writes were verified against a physical CX3550/01 (upstream): power,
 speed 1/2/3, sleep/natural presets, oscillate, beep, timer on/off and duration.
 The CX7550/01 mapping comes from a D-code sweep on a physical unit; see
-[`notes/cx7550_properties.md`](notes/cx7550_properties.md). Display settings
-(brightness, temperature colour, standby display) are not mapped yet.
+[`notes/cx7550_properties.md`](notes/cx7550_properties.md). Display settings were mapped in a second sweep.
 
 ## Adding another model
 

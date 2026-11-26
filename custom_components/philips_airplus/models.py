@@ -15,6 +15,14 @@ Verified mappings:
     * D0320F oscillation reports and is set as the angle: 80 = on, 0 = off.
     * D03110 timer = hours + 1 (2 = 1 h, 4 = 3 h), D03211 = remaining minutes.
     * D03224 = temperature around the device in 0.1 degC (200 = 20.0 degC).
+  CX7550/01 display settings — second sweep, 2026-11-26:
+    * D03105 display brightness: 0 = off, 115 = low, 123 = high.
+    * D03104 show temperature colour: 100 = on, 0 = off.
+    * D03133 show temperature in standby: 1 = on, 0 = off.
+    * D0312A preferred display indicator (setting): 7 = fan speed in manual
+      mode (app overview shows "auto"), 5 = always temperature.
+      D0312B mirrors what the display currently shows (read-only; it drops to 5
+      in auto/sleep/natural even when D0312A is 7).
 """
 from __future__ import annotations
 
@@ -23,6 +31,41 @@ from dataclasses import dataclass, field
 PRESET_AUTO = "auto"
 PRESET_SLEEP = "sleep"
 PRESET_NATURAL = "natural"
+
+
+@dataclass(frozen=True)
+class ToggleSetting:
+    """An on/off device setting, exposed as a CONFIG switch."""
+
+    key: str  # translation_key and unique_id suffix
+    code: str  # D-code
+    on: int
+    off: int
+
+    def is_on(self, value) -> bool | None:
+        try:
+            return int(value) == self.on
+        except (TypeError, ValueError):
+            return None
+
+
+@dataclass(frozen=True)
+class ChoiceSetting:
+    """A device setting with fixed values, exposed as a CONFIG select."""
+
+    key: str  # translation_key and unique_id suffix
+    code: str  # D-code
+    options: dict[str, int]  # option (translated in the UI) -> wire value
+
+    def value_to_option(self, value) -> str | None:
+        try:
+            value = int(value)
+        except (TypeError, ValueError):
+            return None
+        for option, wire in self.options.items():
+            if wire == value:
+                return option
+        return None
 
 
 @dataclass(frozen=True)
@@ -40,6 +83,9 @@ class ModelProfile:
     translation_key: str = "cx3550"
     # Device reports D03224 (temperature x10).
     has_temperature: bool = False
+    # Extra model-specific settings (switches / selects).
+    toggles: tuple[ToggleSetting, ...] = ()
+    choices: tuple[ChoiceSetting, ...] = ()
 
     @property
     def speed_count(self) -> int:
@@ -96,6 +142,14 @@ CX7550 = ModelProfile(
     oscillation_on=80,
     translation_key="cx7550",
     has_temperature=True,
+    toggles=(
+        ToggleSetting("temperature_color", "D03104", on=100, off=0),
+        ToggleSetting("standby_temperature", "D03133", on=1, off=0),
+    ),
+    choices=(
+        ChoiceSetting("display", "D03105", {"off": 0, "low": 115, "high": 123}),
+        ChoiceSetting("display_indicator", "D0312A", {"fan_speed": 7, "temperature": 5}),
+    ),
 )
 
 PROFILES = (CX3550, CX7550)

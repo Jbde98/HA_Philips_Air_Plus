@@ -5,6 +5,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-26
+
+### Added
+- CX7550 display settings, mapped by a second D-code sweep on a physical unit:
+  - **Display** select: off / low / bright (D03105: 0 / 115 / 123)
+  - **Display indicator** select: fan speed in manual mode / always temperature
+    (D0312A: 7 / 5)
+  - **Show temperature colour** switch (D03104: 100 / 0)
+  - **Show temperature in standby** switch (D03133: 1 / 0)
+- Model profiles can now declare extra on/off settings (`ToggleSetting`) and
+  fixed-value settings (`ChoiceSetting`); the switch and select platforms create
+  the entities from them, so new models need no new entity code.
+
 ## [0.5.0] - 2026-11-26
 
 ### Added

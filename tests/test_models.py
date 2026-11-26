@@ -59,3 +59,37 @@ def test_cx3550_unchanged():
 def test_cx7550_oscillation_and_temperature():
     assert models.CX7550.oscillation_on == 80
     assert models.CX7550.has_temperature
+
+
+def test_cx7550_display_settings_from_second_sweep():
+    p = models.CX7550
+    choices = {c.key: c for c in p.choices}
+    display = choices["display"]
+    assert display.code == "D03105"
+    assert display.value_to_option(0) == "off"
+    assert display.value_to_option(115) == "low"
+    assert display.value_to_option(123) == "high"
+    assert display.value_to_option(99) is None
+    indicator = choices["display_indicator"]
+    assert indicator.code == "D0312A"
+    assert indicator.value_to_option(7) == "fan_speed"
+    assert indicator.value_to_option(5) == "temperature"
+
+    toggles = {t.key: t for t in p.toggles}
+    assert toggles["temperature_color"].code == "D03104"
+    assert toggles["temperature_color"].is_on(100) is True
+    assert toggles["temperature_color"].is_on(0) is False
+    assert toggles["standby_temperature"].code == "D03133"
+    assert toggles["standby_temperature"].is_on(1) is True
+    assert toggles["standby_temperature"].is_on(None) is None
+
+
+def test_cx3550_has_no_extra_settings():
+    assert models.CX3550.toggles == ()
+    assert models.CX3550.choices == ()
+
+
+def test_setting_keys_unique():
+    for p in models.PROFILES:
+        keys = [s.key for s in p.toggles] + [s.key for s in p.choices]
+        assert len(keys) == len(set(keys))

@@ -67,6 +67,12 @@
       },
       "timer": {
         "name": "Timer"
+      },
+      "temperature_color": {
+        "name": "Show temperature colour"
+      },
+      "standby_temperature": {
+        "name": "Show temperature in standby"
       }
     },
     "sensor": {
@@ -94,6 +100,21 @@
     "select": {
       "fan_level": {
         "name": "Fan level"
+      },
+      "display": {
+        "name": "Display",
+        "state": {
+          "off": "Off",
+          "low": "Low",
+          "high": "Bright"
+        }
+      },
+      "display_indicator": {
+        "name": "Display indicator",
+        "state": {
+          "fan_speed": "Fan speed in manual mode",
+          "temperature": "Always show temperature"
+        }
       }
     }
   }
