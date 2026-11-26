@@ -5,6 +5,22 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-11-26
+
+### Added
+- Debug logging of every D-code change (`D-code change [CX7550/01]: D0310D: 6 -> 7`)
+  plus a one-time baseline snapshot. Enable debug logging on the integration, step
+  through every function in the Philips app, download the log: that is the whole
+  sweep needed to map a new model. Noisy keys (uptime, RSSI, heap, ack flag) are
+  skipped; identifying keys (DeviceId, ProductId, serial, device name) are masked.
+- Unit tests (`tests/`) and a pytest CI job.
+
+### Fixed
+- Diagnostics leaked personal data: the account email (embedded in the entry
+  title), the entry unique_id, the public IP at pairing time (`activate_ip`),
+  `device_id` and `product_id`. All are now redacted; entity unique_ids are
+  reduced to their suffix.
+
 ## [0.3.2] - 2026-07-06
 
 ### Fixed
