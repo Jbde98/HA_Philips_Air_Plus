@@ -48,20 +48,48 @@
             }
           }
         }
+      },
+      "cx7550": {
+        "state_attributes": {
+          "preset_mode": {
+            "state": {
+              "sleep": "Sleep",
+              "natural": "Natural breeze",
+              "auto": "Auto"
+            }
+          }
+        }
       }
     },
     "switch": {
-      "beep": { "name": "Key beep" },
-      "timer": { "name": "Timer" }
+      "beep": {
+        "name": "Key beep"
+      },
+      "timer": {
+        "name": "Timer"
+      }
     },
     "sensor": {
-      "timer_remaining": { "name": "Timer remaining" },
-      "rssi": { "name": "Signal strength" },
-      "runtime": { "name": "Uptime" },
-      "free_memory": { "name": "Free memory" }
+      "timer_remaining": {
+        "name": "Timer remaining"
+      },
+      "rssi": {
+        "name": "Signal strength"
+      },
+      "runtime": {
+        "name": "Uptime"
+      },
+      "free_memory": {
+        "name": "Free memory"
+      },
+      "temperature": {
+        "name": "Temperature"
+      }
     },
     "number": {
-      "timer_hours": { "name": "Timer duration" }
+      "timer_hours": {
+        "name": "Timer duration"
+      }
     }
   }
 }
