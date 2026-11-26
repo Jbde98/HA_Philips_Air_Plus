@@ -19,9 +19,14 @@ def test_new_and_removed_keys():
 
 
 def test_noisy_keys_ignored():
-    old = {"Runtime": 1, "rssi": -50, "free_memory": 1, "D03105": 0, "D03102": 0}
-    new = {"Runtime": 2, "rssi": -51, "free_memory": 2, "D03105": 115, "D03102": 1}
+    old = {"Runtime": 1, "rssi": -50, "free_memory": 1, "D03102": 0}
+    new = {"Runtime": 2, "rssi": -51, "free_memory": 2, "D03102": 1}
     assert dcode_diff.diff_reported(old, new) == [("D03102", 0, 1)]
+
+
+def test_d03105_is_logged():
+    # candidate for the CX7550 display setting, must not be filtered
+    assert dcode_diff.diff_reported({"D03105": 115}, {"D03105": 0}) == [("D03105", 115, 0)]
 
 
 def test_none_inputs():

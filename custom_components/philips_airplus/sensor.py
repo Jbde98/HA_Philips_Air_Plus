@@ -1,4 +1,6 @@
-"""Sensor platform for Philips Air+ (CX3550/01).
+"""Sensor platform for Philips Air+ (CX3550/01, CX7550/01).
+
+  * temperature       D03224  0.1 degC (models with has_temperature, e.g. CX7550)
 
   * timer_remaining   D03211  minutes (read-only countdown of the auto-off timer)
   * rssi              rssi    dBm   (DIAGNOSTIC, disabled by default)
@@ -17,7 +19,12 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import SIGNAL_STRENGTH_DECIBELS_MILLIWATT, UnitOfInformation, UnitOfTime
+from homeassistant.const import (
+    SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
+    UnitOfInformation,
+    UnitOfTemperature,
+    UnitOfTime,
+)
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity import EntityCategory
@@ -34,6 +41,10 @@ from .const import (
     MODEL_CX3550,
 )
 from .coordinator import PhilipsAirplusCoordinator
+from .models import get_profile
+
+# Temperature around the device, in 0.1 degC (CX7550: 200 = 20.0 degC).
+D_TEMPERATURE = "D03224"
 
 
 async def async_setup_entry(
@@ -41,14 +52,15 @@ async def async_setup_entry(
 ) -> None:
     store = hass.data[DOMAIN][entry.entry_id]
     for coordinator in store["coordinators"].values():
-        async_add_entities(
-            [
-                PhilipsAirplusTimerRemaining(coordinator),
-                PhilipsAirplusRssiSensor(coordinator),
-                PhilipsAirplusRuntimeSensor(coordinator),
-                PhilipsAirplusFreeMemorySensor(coordinator),
-            ]
-        )
+        entities = [
+            PhilipsAirplusTimerRemaining(coordinator),
+            PhilipsAirplusRssiSensor(coordinator),
+            PhilipsAirplusRuntimeSensor(coordinator),
+            PhilipsAirplusFreeMemorySensor(coordinator),
+        ]
+        if get_profile((coordinator.device_info or {}).get("modelid")).has_temperature:
+            entities.append(PhilipsAirplusTemperatureSensor(coordinator))
+        async_add_entities(entities)
 
 
 class _AirplusSensor(CoordinatorEntity, SensorEntity):
@@ -159,3 +171,21 @@ class PhilipsAirplusFreeMemorySensor(_AirplusSensor):
     @property
     def native_value(self):
         return self._num(D_FREE_MEMORY)
+
+class PhilipsAirplusTemperatureSensor(_AirplusSensor):
+    """Temperature measured around the device (D03224, 0.1 degC)."""
+
+    _attr_translation_key = "temperature"
+    _attr_device_class = SensorDeviceClass.TEMPERATURE
+    _attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
+    _attr_state_class = SensorStateClass.MEASUREMENT
+    _attr_suggested_display_precision = 1
+
+    def __init__(self, coordinator: PhilipsAirplusCoordinator) -> None:
+        super().__init__(coordinator)
+        self._attr_unique_id = f"{coordinator.device_id}_temperature"
+
+    @property
+    def native_value(self):
+        raw = self._num(D_TEMPERATURE)
+        return None if raw is None else raw / 10

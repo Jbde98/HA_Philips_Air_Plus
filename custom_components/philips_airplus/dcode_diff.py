@@ -14,7 +14,9 @@ NOISY_KEYS = frozenset({
     "Runtime",       # uptime counter
     "rssi",          # WiFi signal
     "free_memory",   # heap
-    "D03105",        # transient ack/dirty flag (flips on every change)
+    # D03105 is NOT ignored: on the CX3550 it looked like an ack flag, but on the
+    # CX7550 display-brightness changes showed no other D-code moving, so it is a
+    # candidate for the display setting and must stay visible in the sweep log.
 })
 
 

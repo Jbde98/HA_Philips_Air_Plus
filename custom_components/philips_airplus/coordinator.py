@@ -39,7 +39,7 @@ class PhilipsAirplusCoordinator(DataUpdateCoordinator):
         self.connected = False
         self.data: dict = {}
 
-    async def async_update_data(self) -> dict:
+    async def _async_update_data(self) -> dict:
         """Reconcile: ask the shadow for its current reported state. The reply lands
         async on /get/accepted via threadsafe_set_data; return what's cached now."""
         if self.connected:

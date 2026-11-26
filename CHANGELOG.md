@@ -5,6 +5,25 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-26
+
+### Added
+- **CX7550/01 (Smart Tower Fan 7000 Series)** support via per-model profiles
+  (`models.py`): 12 speeds (wire codes 1-10, 81, 82), presets auto / sleep /
+  natural breeze, oscillation (80 deg), timer, and a **temperature sensor**
+  (D03224, 0.1 degC). Mapping verified by a debug-log sweep on a physical unit.
+  The CX3550 keeps its previous behaviour; unknown models fall back to it.
+- Unit tests for the model profiles.
+
+### Fixed
+- The 30 s reconcile poll never ran: the coordinator implemented
+  `async_update_data` instead of `_async_update_data`, so HA raised
+  `NotImplementedError: Update method not implemented` every 30 s.
+- Blocking call inside the event loop (`load_default_certs`) on connect: the
+  MQTT client now uses HA's shared SSL client context instead of `tls_set()`.
+- D03105 is no longer hidden from the D-code debug log (display-setting candidate
+  on the CX7550).
+
 ## [0.3.3] - 2026-11-26
 
 ### Added
